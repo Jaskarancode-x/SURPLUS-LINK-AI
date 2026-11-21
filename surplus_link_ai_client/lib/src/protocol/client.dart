@@ -531,6 +531,20 @@ class EndpointRescueSession extends _isc.EndpointRef {
         {},
       );
 
+  /// Real-time live status stream by 6-character join code (convenient for QR & join-code entry).
+  _ida.Stream<_is3u53ys.RescueStreamEvent> watchSessionByCode(
+    String joinCode,
+  ) =>
+      caller.callStreamingServerEndpoint<
+        _ida.Stream<_is3u53ys.RescueStreamEvent>,
+        _is3u53ys.RescueStreamEvent
+      >(
+        'rescueSession',
+        'watchSessionByCode',
+        {'joinCode': joinCode},
+        {},
+      );
+
   /// Real-time global surplus donation stream for the NGO Live Inbox.
   _ida.Stream<_is3u53ys.RescueStreamEvent> watchGlobalDonations() =>
       caller.callStreamingServerEndpoint<

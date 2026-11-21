@@ -1090,6 +1090,39 @@ class _RescueSessionEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
+  _ida.Stream<_ip6c8o8b.RescueStreamEvent> watchSessionByCode(
+    _ist.TestSessionBuilder sessionBuilder,
+    String joinCode,
+  ) {
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_ip6c8o8b.RescueStreamEvent>();
+    _ist.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'rescueSession',
+              method: 'watchSessionByCode',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'rescueSession',
+              methodName: 'watchSessionByCode',
+              arguments: {'joinCode': joinCode},
+              requestedInputStreams: [],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
   _ida.Stream<_ip6c8o8b.RescueStreamEvent> watchGlobalDonations(
     _ist.TestSessionBuilder sessionBuilder,
   ) {

@@ -27,5 +27,6 @@ rescueSession:
   - getSessionListing:
   - publishSessionEvent:
   - watchRescueSession:
+  - watchSessionByCode:
   - watchGlobalDonations:
   - seedDemoOrganisationsAndUsers:

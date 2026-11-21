@@ -717,6 +717,30 @@ class Endpoints extends _is.EndpointDispatch {
                         params['rescueSessionId'],
                       ),
         ),
+        'watchSessionByCode': _is.MethodStreamConnector(
+          name: 'watchSessionByCode',
+          params: {
+            'joinCode': _is.ParameterDescription(
+              name: 'joinCode',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          streamParams: {},
+          returnType: _is.MethodStreamReturnType.streamType,
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) =>
+                  (endpoints['rescueSession']
+                          as _io3nrfce.RescueSessionEndpoint)
+                      .watchSessionByCode(
+                        session,
+                        params['joinCode'],
+                      ),
+        ),
         'watchGlobalDonations': _is.MethodStreamConnector(
           name: 'watchGlobalDonations',
           params: {},

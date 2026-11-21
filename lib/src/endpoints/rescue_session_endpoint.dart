@@ -356,6 +356,23 @@ class RescueSessionEndpoint extends Endpoint {
     );
   }
 
+  /// Real-time live status stream by 6-character join code (convenient for QR & join-code entry).
+  Stream<RescueStreamEvent> watchSessionByCode(
+    Session session,
+    String joinCode,
+  ) async* {
+    final normalized = joinCode.trim().toUpperCase();
+    final rescueSession = await RescueSession.db.findFirstRow(
+      session,
+      where: (t) => t.joinCode.equals(normalized),
+    );
+    if (rescueSession == null) {
+      throw DatabaseException('No rescue session found with join code "$normalized".');
+    }
+
+    yield* watchRescueSession(session, rescueSession.id!);
+  }
+
   /// Real-time global surplus donation stream for the NGO Live Inbox.
   Stream<RescueStreamEvent> watchGlobalDonations(Session session) async* {
     // 1. Yield snapshot of the most urgent active listing if available
