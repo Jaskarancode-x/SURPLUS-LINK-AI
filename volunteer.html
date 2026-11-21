@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SurplusLink AI — Volunteer & QR Handover</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #09090b; color: #f4f4f5; max-width: 920px; margin: 2rem auto; padding: 0 1rem; }
+    nav { border-bottom: 1px solid #27272a; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    nav a { color: #a3e635; margin-right: 1.5rem; text-decoration: none; font-weight: 600; }
+    .card { background: #18181b; border: 1px solid #27272a; border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; }
+    .badge { background: #27272a; border: 1px solid #a3e635; color: #a3e635; padding: 3px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+    .badge.done { border-color: #38bdf8; color: #38bdf8; }
+    button { background: #a3e635; color: #09090b; border: none; padding: 9px 15px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-right: 8px; }
+    button.secondary { background: #27272a; color: #f4f4f5; border: 1px solid #3f3f46; }
+    input { background: #09090b; color: #fff; border: 1px solid #3f3f46; padding: 9px 12px; border-radius: 6px; width: 240px; font-family: monospace; }
+    #qr-box { display: none; background: #121215; border: 1px solid #a3e635; padding: 1.5rem; margin-top: 1.5rem; border-radius: 10px; }
+    .qr-grid { display: grid; grid-template-columns: 200px 1fr; gap: 1.5rem; align-items: start; }
+    #qr-reader { width: 100%; max-width: 340px; margin-top: 12px; border-radius: 8px; overflow: hidden; }
+    .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 1rem; font-weight: 600; }
+    .ok { background: #14532d; border: 1px solid #22c55e; color: #bbf7d0; }
+    .err { background: #7f1d1d; border: 1px solid #ef4444; color: #fecaca; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/donor">Donor</a>
+    <a href="/recipient">Recipient</a>
+    <a href="/volunteer">Volunteer & QR</a>
+    <a href="/dashboard">Impact Dashboard</a>
+  </nav>
+
+  <h1>Volunteer Pickup Queue & QR Verification</h1>
+  <div id="alert-area"></div>
+  <div id="pickup-list">Loading pickups...</div>
+
+  <!-- QR Display, Camera Scanner & Manual Verification Box -->
+  <div id="qr-box">
+    <h3>Handover Verification — Pickup #<span id="active-pickup-id"></span></h3>
+    <div class="qr-grid">
+      <div>
+        <img id="qr-image" src="" alt="Handover QR" style="width:180px; height:180px; background:#fff; padding:8px; border-radius:8px;" />
+        <p style="font-size:0.85rem; color:#a1a1aa; margin-top:6px;">Expires: <span id="qr-expiry"></span></p>
+      </div>
+      <div>
+        <p>Token Code: <strong id="qr-token-text" style="color:#a3e635; font-family:monospace; font-size:1.1rem;"></strong></p>
+
+        <div style="margin: 1rem 0;">
+          <button class="secondary" id="scan-btn" onclick="toggleScanner()">Open Camera QR Scanner</button>
+          <div id="qr-reader"></div>
+        </div>
+
+        <hr style="border-color:#27272a; margin: 1rem 0;" />
+        <label style="font-size:0.9rem; color:#a1a1aa;">Manual Token Entry (Glare-Proof Backup):</label><br/><br/>
+        <input type="text" id="verify-input" placeholder="e.g. SL-1-A9F2C10B" />
+        <button onclick="submitVerify()">Verify Handover</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentPickupId = null;
+    let html5QrCode = null;
+    let isScanning = false;
+
+    function showAlert(msg, isError = false) {
+      document.getElementById("alert-area").innerHTML =
+        `<div class="alert ${isError ? 'err' : 'ok'}">${msg}</div>`;
+    }
+
+    async function loadPickups() {
+      const res = await fetch("/api/pickups");
+      const pickups = await res.json();
+      const container = document.getElementById("pickup-list");
+
+      if (!pickups.length) {
+        container.innerHTML = "<p style='color:#a1a1aa;'>No accepted pickups yet. Accept a listing in the Recipient view first.</p>";
+        return;
+      }
+
+      container.innerHTML = pickups.map(p => `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0;">#${p.pickup_id}: ${p.title} (${p.quantity} ${p.unit})</h3>
+            <span class="badge ${p.pickup_status === 'Collected' ? 'done' : ''}">${p.pickup_status}</span>
+          </div>
+          <p style="color:#a1a1aa;"><strong>Recipient:</strong> ${p.recipient_name || "Assigned NGO"} &bull; <strong>Location:</strong> ${p.pickup_location} &bull; <strong>Deadline:</strong> ${p.deadline}</p>
+          ${p.pickup_status !== "Collected" ? `
+            <button class="secondary" onclick="setInProgress(${p.pickup_id})">Mark In Progress</button>
+            <button onclick="generateQR(${p.pickup_id})">Generate Handover QR</button>
+          ` : `<p style="color:#38bdf8; margin-bottom:0; font-weight:600;">&#10003; Verified &amp; Collected</p>`}
+        </div>
+      `).join("");
+    }
+
+    async function setInProgress(pickupId) {
+      const res = await fetch(`/api/pickups/${pickupId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "Pickup in progress" })
+      });
+      const data = await res.json();
+      if (!res.ok) return showAlert(data.error, true);
+      showAlert(`Pickup #${pickupId} updated to: Pickup in progress`);
+      loadPickups();
+    }
+
+    async function generateQR(pickupId) {
+      currentPickupId = pickupId;
+      const res = await fetch(`/api/pickups/${pickupId}/qr`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) return showAlert(data.error, true);
+
+      document.getElementById("active-pickup-id").textContent = pickupId;
+      document.getElementById("qr-image").src = data.qr_image;
+      document.getElementById("qr-token-text").textContent = data.token;
+      document.getElementById("qr-expiry").textContent = data.expires_at;
+      document.getElementById("verify-input").value = data.token;
+      document.getElementById("qr-box").style.display = "block";
+      showAlert("Single-use handover QR generated.");
+    }
+
+    async function toggleScanner() {
+      const btn = document.getElementById("scan-btn");
+      if (isScanning && html5QrCode) {
+        await html5QrCode.stop();
+        isScanning = false;
+        btn.textContent = "Open Camera QR Scanner";
+        return;
+      }
+
+      html5QrCode = new Html5Qrcode("qr-reader");
+      try {
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 200, height: 200 } },
+          async (decodedText) => {
+            document.getElementById("verify-input").value = decodedText;
+            await html5QrCode.stop();
+            isScanning = false;
+            btn.textContent = "Open Camera QR Scanner";
+            submitVerify();
+          }
+        );
+        isScanning = true;
+        btn.textContent = "Stop Camera Scanner";
+      } catch (err) {
+        showAlert("Camera unavailable on this browser — use the manual token box below.", true);
+      }
+    }
+
+    async function submitVerify() {
+      const token = document.getElementById("verify-input").value;
+      const res = await fetch(`/api/pickups/${currentPickupId}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+      });
+      const data = await res.json();
+      if (!res.ok) return showAlert(data.error, true);
+
+      showAlert(data.message);
+      loadPickups();
+    }
+
+    loadPickups();
+  </script>
+</body>
+</html>

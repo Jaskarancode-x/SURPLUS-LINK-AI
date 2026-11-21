@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SurplusLink AI — Live Impact Dashboard</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #09090b; color: #f4f4f5; max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+    nav { border-bottom: 1px solid #27272a; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    nav a { color: #a3e635; margin-right: 1.5rem; text-decoration: none; font-weight: 600; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    .metric { background: #18181b; border: 1px solid #27272a; border-radius: 10px; padding: 1.25rem; text-align: center; }
+    .metric h2 { font-size: 2.25rem; margin: 0; color: #a3e635; }
+    .metric p { color: #a1a1aa; margin: 0.4rem 0 0; font-size: 0.9rem; }
+    #map { height: 360px; border-radius: 10px; border: 1px solid #27272a; }
+    .note { font-size: 0.85rem; color: #71717a; margin-top: 0.6rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/donor">Donor</a>
+    <a href="/recipient">Recipient</a>
+    <a href="/volunteer">Volunteer & QR</a>
+    <a href="/dashboard">Impact Dashboard</a>
+  </nav>
+
+  <h1>Live Redistribution Impact</h1>
+  <div class="grid">
+    <div class="metric">
+      <h2 id="count-listings">0</h2>
+      <p>Listings Created</p>
+    </div>
+    <div class="metric">
+      <h2 id="count-pickups">0</h2>
+      <p>Pickups Accepted</p>
+    </div>
+    <div class="metric">
+      <h2 id="count-handovers">0</h2>
+      <p>Handovers Completed</p>
+    </div>
+    <div class="metric">
+      <h2 id="count-quantity">0</h2>
+      <p>Surplus Rescued (kg)</p>
+    </div>
+  </div>
+
+  <h3>Location-Based Discovery</h3>
+  <div id="map"></div>
+  <p class="note">* All four counters reflect live SQLite database records. Map pins use illustrative demo coordinates for seeded campus/NGO locations.</p>
+
+  <script>
+    async function loadImpact() {
+      const res = await fetch("/api/dashboard/impact");
+      const data = await res.json();
+
+      document.getElementById("count-listings").textContent = data.listings_created;
+      document.getElementById("count-pickups").textContent = data.pickups_accepted;
+      document.getElementById("count-handovers").textContent = data.handovers_completed;
+      document.getElementById("count-quantity").textContent = data.rescued_quantity;
+
+      const map = L.map("map").setView([30.5161, 76.6598], 11);
+
+      // CartoDB Dark Matter tiles matching the dark theme
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        subdomains: "abcd",
+        maxZoom: 19
+      }).addTo(map);
+
+      data.map_pins.forEach(pin => {
+        const pinColor = pin.status === "Collected" ? "#a3e635" : "#fbbf24";
+        L.circleMarker([pin.lat, pin.lng], {
+          radius: 9,
+          fillColor: pinColor,
+          color: "#09090b",
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.9
+        })
+          .addTo(map)
+          .bindPopup(`<strong>${pin.title}</strong><br/>${pin.location}<br/>Status: <b>${pin.status}</b>`);
+      });
+    }
+
+    loadImpact();
+  </script>
+</body>
+</html>
