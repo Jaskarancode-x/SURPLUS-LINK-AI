@@ -21,6 +21,12 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
 import 'package:serverpod_test/serverpod_test.dart' as _ist;
 import 'package:surplus_link_ai_server/src/generated/food_listing.dart'
     as _ibkqq8om;
+import 'package:surplus_link_ai_server/src/generated/rescue_session.dart'
+    as _iew5q7jy;
+import 'package:surplus_link_ai_server/src/generated/rescue_stream_event.dart'
+    as _ip6c8o8b;
+import 'package:surplus_link_ai_server/src/generated/session_participant.dart'
+    as _igvhw064;
 import 'package:surplus_link_ai_server/src/generated/protocol.dart';
 import 'package:surplus_link_ai_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -159,6 +165,8 @@ class TestEndpoints {
   late final _JwtRefreshEndpoint jwtRefresh;
 
   late final _DonationEndpoint donation;
+
+  late final _RescueSessionEndpoint rescueSession;
 }
 
 class _InternalTestEndpoints extends TestEndpoints
@@ -177,6 +185,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     donation = _DonationEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    rescueSession = _RescueSessionEndpoint(
       endpoints,
       serializationManager,
     );
@@ -807,6 +819,332 @@ class _DonationEndpoint {
                   _localCallContext.arguments,
                 )
                 as _ida.Future<List<_ibkqq8om.FoodListing>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _RescueSessionEndpoint {
+  _RescueSessionEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _is.EndpointDispatch _endpointDispatch;
+
+  final _is.SerializationManager _serializationManager;
+
+  _ida.Future<_iew5q7jy.RescueSession> createSession(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required int foodListingId,
+    required int hostDonorId,
+    required String hostName,
+  }) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'rescueSession',
+            method: 'createSession',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'rescueSession',
+          methodName: 'createSession',
+          parameters: _ist.testObjectToJson({
+            'foodListingId': foodListingId,
+            'hostDonorId': hostDonorId,
+            'hostName': hostName,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iew5q7jy.RescueSession>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_iew5q7jy.RescueSession> joinWithCode(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required String joinCode,
+    required int userId,
+    required String userName,
+    required String role,
+  }) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'rescueSession',
+            method: 'joinWithCode',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'rescueSession',
+          methodName: 'joinWithCode',
+          parameters: _ist.testObjectToJson({
+            'joinCode': joinCode,
+            'userId': userId,
+            'userName': userName,
+            'role': role,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iew5q7jy.RescueSession>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_iew5q7jy.RescueSession?> getSession(
+    _ist.TestSessionBuilder sessionBuilder, {
+    int? sessionId,
+    String? joinCode,
+  }) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'rescueSession',
+            method: 'getSession',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'rescueSession',
+          methodName: 'getSession',
+          parameters: _ist.testObjectToJson({
+            'sessionId': sessionId,
+            'joinCode': joinCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iew5q7jy.RescueSession?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<List<_igvhw064.SessionParticipant>> getSessionParticipants(
+    _ist.TestSessionBuilder sessionBuilder,
+    int rescueSessionId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'rescueSession',
+            method: 'getSessionParticipants',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'rescueSession',
+          methodName: 'getSessionParticipants',
+          parameters: _ist.testObjectToJson({
+            'rescueSessionId': rescueSessionId,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<List<_igvhw064.SessionParticipant>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_ibkqq8om.FoodListing?> getSessionListing(
+    _ist.TestSessionBuilder sessionBuilder,
+    int rescueSessionId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'rescueSession',
+            method: 'getSessionListing',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'rescueSession',
+          methodName: 'getSessionListing',
+          parameters: _ist.testObjectToJson({
+            'rescueSessionId': rescueSessionId,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_ibkqq8om.FoodListing?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_ip6c8o8b.RescueStreamEvent> publishSessionEvent(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required int rescueSessionId,
+    required String eventType,
+    required int actorUserId,
+    required String actorRole,
+    String? newStatus,
+    String? message,
+  }) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'rescueSession',
+            method: 'publishSessionEvent',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'rescueSession',
+          methodName: 'publishSessionEvent',
+          parameters: _ist.testObjectToJson({
+            'rescueSessionId': rescueSessionId,
+            'eventType': eventType,
+            'actorUserId': actorUserId,
+            'actorRole': actorRole,
+            'newStatus': newStatus,
+            'message': message,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_ip6c8o8b.RescueStreamEvent>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Stream<_ip6c8o8b.RescueStreamEvent> watchRescueSession(
+    _ist.TestSessionBuilder sessionBuilder,
+    int rescueSessionId,
+  ) {
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_ip6c8o8b.RescueStreamEvent>();
+    _ist.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'rescueSession',
+              method: 'watchRescueSession',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'rescueSession',
+              methodName: 'watchRescueSession',
+              arguments: {'rescueSessionId': rescueSessionId},
+              requestedInputStreams: [],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _ida.Stream<_ip6c8o8b.RescueStreamEvent> watchGlobalDonations(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) {
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_ip6c8o8b.RescueStreamEvent>();
+    _ist.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'rescueSession',
+              method: 'watchGlobalDonations',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'rescueSession',
+              methodName: 'watchGlobalDonations',
+              arguments: {},
+              requestedInputStreams: [],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _ida.Future<String> seedDemoOrganisationsAndUsers(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'rescueSession',
+            method: 'seedDemoOrganisationsAndUsers',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'rescueSession',
+          methodName: 'seedDemoOrganisationsAndUsers',
+          parameters: _ist.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

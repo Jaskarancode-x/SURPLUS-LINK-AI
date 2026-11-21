@@ -19,3 +19,13 @@ donation:
   - listAvailableListings:
   - getListing:
   - getListingsByDonor:
+rescueSession:
+  - createSession:
+  - joinWithCode:
+  - getSession:
+  - getSessionParticipants:
+  - getSessionListing:
+  - publishSessionEvent:
+  - watchRescueSession:
+  - watchGlobalDonations:
+  - seedDemoOrganisationsAndUsers:

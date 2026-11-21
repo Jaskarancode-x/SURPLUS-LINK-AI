@@ -19,6 +19,12 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'package:surplus_link_ai_client/src/protocol/food_listing.dart'
     as _i0r66vnj;
+import 'package:surplus_link_ai_client/src/protocol/rescue_session.dart'
+    as _iht2qy8w;
+import 'package:surplus_link_ai_client/src/protocol/rescue_stream_event.dart'
+    as _is3u53ys;
+import 'package:surplus_link_ai_client/src/protocol/session_participant.dart'
+    as _i2c66h87;
 import 'protocol.dart' as _il2as5qe;
 
 /// By extending [EmailOtpIdpBaseEndpoint], the email identity provider
@@ -417,6 +423,135 @@ class EndpointDonation extends _isc.EndpointRef {
   );
 }
 
+/// Endpoint managing live rescue sessions, 6-character join codes,
+/// multi-device participant coordination, and real-time streaming.
+/// {@category Endpoint}
+class EndpointRescueSession extends _isc.EndpointRef {
+  EndpointRescueSession(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'rescueSession';
+
+  /// Creates a shared live rescue session with a unique 6-character join code.
+  /// Automatically associates the FoodListing and registers the host donor.
+  _ida.Future<_iht2qy8w.RescueSession> createSession({
+    required int foodListingId,
+    required int hostDonorId,
+    required String hostName,
+  }) => caller.callServerEndpoint<_iht2qy8w.RescueSession>(
+    'rescueSession',
+    'createSession',
+    {
+      'foodListingId': foodListingId,
+      'hostDonorId': hostDonorId,
+      'hostName': hostName,
+    },
+  );
+
+  /// Allows a Donor, NGO, or Volunteer device to join the rescue session via a 6-char code.
+  _ida.Future<_iht2qy8w.RescueSession> joinWithCode({
+    required String joinCode,
+    required int userId,
+    required String userName,
+    required String role,
+  }) => caller.callServerEndpoint<_iht2qy8w.RescueSession>(
+    'rescueSession',
+    'joinWithCode',
+    {
+      'joinCode': joinCode,
+      'userId': userId,
+      'userName': userName,
+      'role': role,
+    },
+  );
+
+  /// Fetches a rescue session by ID or 6-char join code.
+  _ida.Future<_iht2qy8w.RescueSession?> getSession({
+    int? sessionId,
+    String? joinCode,
+  }) => caller.callServerEndpoint<_iht2qy8w.RescueSession?>(
+    'rescueSession',
+    'getSession',
+    {
+      'sessionId': sessionId,
+      'joinCode': joinCode,
+    },
+  );
+
+  /// Returns all connected participants for a rescue session.
+  _ida.Future<List<_i2c66h87.SessionParticipant>> getSessionParticipants(
+    int rescueSessionId,
+  ) => caller.callServerEndpoint<List<_i2c66h87.SessionParticipant>>(
+    'rescueSession',
+    'getSessionParticipants',
+    {'rescueSessionId': rescueSessionId},
+  );
+
+  /// Returns the FoodListing linked to a rescue session.
+  _ida.Future<_i0r66vnj.FoodListing?> getSessionListing(int rescueSessionId) =>
+      caller.callServerEndpoint<_i0r66vnj.FoodListing?>(
+        'rescueSession',
+        'getSessionListing',
+        {'rescueSessionId': rescueSessionId},
+      );
+
+  /// Unified event publisher enforcing server-side role constraints and atomic state updates.
+  _ida.Future<_is3u53ys.RescueStreamEvent> publishSessionEvent({
+    required int rescueSessionId,
+    required String eventType,
+    required int actorUserId,
+    required String actorRole,
+    String? newStatus,
+    String? message,
+  }) => caller.callServerEndpoint<_is3u53ys.RescueStreamEvent>(
+    'rescueSession',
+    'publishSessionEvent',
+    {
+      'rescueSessionId': rescueSessionId,
+      'eventType': eventType,
+      'actorUserId': actorUserId,
+      'actorRole': actorRole,
+      'newStatus': newStatus,
+      'message': message,
+    },
+  );
+
+  /// Real-time live status stream for a specific rescue session room.
+  /// Yields an initial snapshot immediately upon connection so devices sync without refresh.
+  _ida.Stream<_is3u53ys.RescueStreamEvent> watchRescueSession(
+    int rescueSessionId,
+  ) =>
+      caller.callStreamingServerEndpoint<
+        _ida.Stream<_is3u53ys.RescueStreamEvent>,
+        _is3u53ys.RescueStreamEvent
+      >(
+        'rescueSession',
+        'watchRescueSession',
+        {'rescueSessionId': rescueSessionId},
+        {},
+      );
+
+  /// Real-time global surplus donation stream for the NGO Live Inbox.
+  _ida.Stream<_is3u53ys.RescueStreamEvent> watchGlobalDonations() =>
+      caller.callStreamingServerEndpoint<
+        _ida.Stream<_is3u53ys.RescueStreamEvent>,
+        _is3u53ys.RescueStreamEvent
+      >(
+        'rescueSession',
+        'watchGlobalDonations',
+        {},
+        {},
+      );
+
+  /// Seeds demo organizations and users for the live demonstration script.
+  _ida.Future<String> seedDemoOrganisationsAndUsers() =>
+      caller.callServerEndpoint<String>(
+        'rescueSession',
+        'seedDemoOrganisationsAndUsers',
+        {},
+      );
+}
+
 class Modules {
   Modules(Client client) {
     serverpod_auth_idp = _iaic.Caller(client);
@@ -458,6 +593,7 @@ class Client extends _isc.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     donation = EndpointDonation(this);
+    rescueSession = EndpointRescueSession(this);
     modules = Modules(this);
   }
 
@@ -467,6 +603,8 @@ class Client extends _isc.ServerpodClientShared {
 
   late final EndpointDonation donation;
 
+  late final EndpointRescueSession rescueSession;
+
   late final Modules modules;
 
   @override
@@ -474,6 +612,7 @@ class Client extends _isc.ServerpodClientShared {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
     'donation': donation,
+    'rescueSession': rescueSession,
   };
 
   @override

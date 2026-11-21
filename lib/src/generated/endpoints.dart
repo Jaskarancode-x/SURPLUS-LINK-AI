@@ -20,6 +20,7 @@ import 'package:surplus_link_ai_server/src/generated/food_listing.dart'
 import '../auth/email_idp_endpoint.dart' as _iuc1hd5t;
 import '../auth/jwt_refresh_endpoint.dart' as _inwq3ztq;
 import '../endpoints/donation_endpoint.dart' as _ivpeodxk;
+import '../endpoints/rescue_session_endpoint.dart' as _io3nrfce;
 
 class Endpoints extends _is.EndpointDispatch {
   @override
@@ -50,6 +51,12 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'donation',
+          null,
+        ),
+      'rescueSession': _io3nrfce.RescueSessionEndpoint()
+        ..initialize(
+          server,
+          'rescueSession',
           null,
         ),
     };
@@ -475,6 +482,255 @@ class Endpoints extends _is.EndpointDispatch {
                     session,
                     params['donorUserId'],
                   ),
+        ),
+      },
+    );
+    connectors['rescueSession'] = _is.EndpointConnector(
+      name: 'rescueSession',
+      endpoint: endpoints['rescueSession']!,
+      methodConnectors: {
+        'createSession': _is.MethodConnector(
+          name: 'createSession',
+          params: {
+            'foodListingId': _is.ParameterDescription(
+              name: 'foodListingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'hostDonorId': _is.ParameterDescription(
+              name: 'hostDonorId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'hostName': _is.ParameterDescription(
+              name: 'hostName',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['rescueSession']
+                          as _io3nrfce.RescueSessionEndpoint)
+                      .createSession(
+                        session,
+                        foodListingId: params['foodListingId'],
+                        hostDonorId: params['hostDonorId'],
+                        hostName: params['hostName'],
+                      ),
+        ),
+        'joinWithCode': _is.MethodConnector(
+          name: 'joinWithCode',
+          params: {
+            'joinCode': _is.ParameterDescription(
+              name: 'joinCode',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'userId': _is.ParameterDescription(
+              name: 'userId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'userName': _is.ParameterDescription(
+              name: 'userName',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'role': _is.ParameterDescription(
+              name: 'role',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['rescueSession']
+                          as _io3nrfce.RescueSessionEndpoint)
+                      .joinWithCode(
+                        session,
+                        joinCode: params['joinCode'],
+                        userId: params['userId'],
+                        userName: params['userName'],
+                        role: params['role'],
+                      ),
+        ),
+        'getSession': _is.MethodConnector(
+          name: 'getSession',
+          params: {
+            'sessionId': _is.ParameterDescription(
+              name: 'sessionId',
+              type: _is.getType<int?>(),
+              nullable: true,
+            ),
+            'joinCode': _is.ParameterDescription(
+              name: 'joinCode',
+              type: _is.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['rescueSession']
+                          as _io3nrfce.RescueSessionEndpoint)
+                      .getSession(
+                        session,
+                        sessionId: params['sessionId'],
+                        joinCode: params['joinCode'],
+                      ),
+        ),
+        'getSessionParticipants': _is.MethodConnector(
+          name: 'getSessionParticipants',
+          params: {
+            'rescueSessionId': _is.ParameterDescription(
+              name: 'rescueSessionId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['rescueSession']
+                          as _io3nrfce.RescueSessionEndpoint)
+                      .getSessionParticipants(
+                        session,
+                        params['rescueSessionId'],
+                      ),
+        ),
+        'getSessionListing': _is.MethodConnector(
+          name: 'getSessionListing',
+          params: {
+            'rescueSessionId': _is.ParameterDescription(
+              name: 'rescueSessionId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['rescueSession']
+                          as _io3nrfce.RescueSessionEndpoint)
+                      .getSessionListing(
+                        session,
+                        params['rescueSessionId'],
+                      ),
+        ),
+        'publishSessionEvent': _is.MethodConnector(
+          name: 'publishSessionEvent',
+          params: {
+            'rescueSessionId': _is.ParameterDescription(
+              name: 'rescueSessionId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'eventType': _is.ParameterDescription(
+              name: 'eventType',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'actorUserId': _is.ParameterDescription(
+              name: 'actorUserId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'actorRole': _is.ParameterDescription(
+              name: 'actorRole',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'newStatus': _is.ParameterDescription(
+              name: 'newStatus',
+              type: _is.getType<String?>(),
+              nullable: true,
+            ),
+            'message': _is.ParameterDescription(
+              name: 'message',
+              type: _is.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['rescueSession']
+                          as _io3nrfce.RescueSessionEndpoint)
+                      .publishSessionEvent(
+                        session,
+                        rescueSessionId: params['rescueSessionId'],
+                        eventType: params['eventType'],
+                        actorUserId: params['actorUserId'],
+                        actorRole: params['actorRole'],
+                        newStatus: params['newStatus'],
+                        message: params['message'],
+                      ),
+        ),
+        'seedDemoOrganisationsAndUsers': _is.MethodConnector(
+          name: 'seedDemoOrganisationsAndUsers',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['rescueSession']
+                          as _io3nrfce.RescueSessionEndpoint)
+                      .seedDemoOrganisationsAndUsers(session),
+        ),
+        'watchRescueSession': _is.MethodStreamConnector(
+          name: 'watchRescueSession',
+          params: {
+            'rescueSessionId': _is.ParameterDescription(
+              name: 'rescueSessionId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          streamParams: {},
+          returnType: _is.MethodStreamReturnType.streamType,
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) =>
+                  (endpoints['rescueSession']
+                          as _io3nrfce.RescueSessionEndpoint)
+                      .watchRescueSession(
+                        session,
+                        params['rescueSessionId'],
+                      ),
+        ),
+        'watchGlobalDonations': _is.MethodStreamConnector(
+          name: 'watchGlobalDonations',
+          params: {},
+          streamParams: {},
+          returnType: _is.MethodStreamReturnType.streamType,
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) =>
+                  (endpoints['rescueSession']
+                          as _io3nrfce.RescueSessionEndpoint)
+                      .watchGlobalDonations(session),
         ),
       },
     );
