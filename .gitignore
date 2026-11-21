@@ -1,33 +1,49 @@
-
-# Dart / Flutter
-.dart_tool/
-.packages
-build/
-.pub/
-.pub-cache/
-
-# Pubspec overrides
-pubspec_overrides.yaml
-
 # Environment variables and secrets
 .env
 .env.*
 !.env.example
-**/config/passwords.yaml
 
-# IDE and AI agent files
-.vscode/mcp.json
-.dart_skills/
-.agents/
-.claude/
-.gemini/
-.cursor/
-.codex/
-.mcp.json
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Serverpod Cloud CLI
-.scloud/
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
 
-# Operating system
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
 .DS_Store
 Thumbs.db
