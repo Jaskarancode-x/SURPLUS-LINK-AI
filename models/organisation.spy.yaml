@@ -1,0 +1,14 @@
+class: Organisation
+table: organisation
+fields:
+  name: String
+  type: String
+  maxCapacityMeals: int
+  serviceAreaKm: double
+  latitude: double
+  longitude: double
+  address: String
+  operatingHoursStart: String
+  operatingHoursEnd: String
+  acceptedCategories: String
+  isVerified: bool

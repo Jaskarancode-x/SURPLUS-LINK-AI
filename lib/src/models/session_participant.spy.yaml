@@ -1,0 +1,13 @@
+class: SessionParticipant
+table: session_participant
+fields:
+  rescueSessionId: int
+  userId: int
+  userName: String
+  role: String
+  joinedAt: DateTime
+  isOnline: bool
+indexes:
+  session_user_idx:
+    fields: rescueSessionId, userId
+    unique: true

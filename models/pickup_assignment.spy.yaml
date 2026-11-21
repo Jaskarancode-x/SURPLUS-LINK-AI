@@ -1,0 +1,10 @@
+class: PickupAssignment
+table: pickup_assignment
+fields:
+  rescueSessionId: int
+  foodListingId: int
+  volunteerUserId: int
+  pickupStatus: String
+  pickupInstructions: String?
+  assignedAt: DateTime
+  updatedAt: DateTime

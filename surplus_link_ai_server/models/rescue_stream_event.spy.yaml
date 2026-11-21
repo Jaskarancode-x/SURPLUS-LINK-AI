@@ -1,0 +1,13 @@
+class: RescueStreamEvent
+fields:
+  eventType: String
+  rescueSessionId: int
+  foodListingId: int?
+  joinCode: String?
+  status: String
+  actorUserId: int?
+  actorRole: String?
+  message: String
+  listing: FoodListing?
+  session: RescueSession?
+  timestamp: DateTime

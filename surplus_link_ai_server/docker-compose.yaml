@@ -1,0 +1,44 @@
+services:
+  # Development services
+  postgres:
+    image: ghcr.io/serverpod/postgres:16
+    ports:
+      - "8090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: surplus_link_ai
+      POSTGRES_PASSWORD: "-0eZ8qZ1c4OuzAK2XCJmBsdaJ2JKzYVj"
+    volumes:
+      - surplus_link_ai_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "8091:6379"
+    command: redis-server --requirepass "sblfs5fpJOQZd2M4weq8tSFi08ubvu4N"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+  # Test services
+  postgres_test:
+    image: ghcr.io/serverpod/postgres:16
+    ports:
+      - "9090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: surplus_link_ai_test
+      POSTGRES_PASSWORD: "jI6KZSlkgl-F_w0ZAc6xLB_WpcHVt9Wc"
+    volumes:
+      - surplus_link_ai_test_data:/var/lib/postgresql/data
+
+  redis_test:
+    image: redis:6.2.6
+    ports:
+      - "9091:6379"
+    command: redis-server --requirepass "OdgtYhYCb0YLnQxOguJvPcO_s_U8ogRz"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+volumes:
+  surplus_link_ai_data:
+  surplus_link_ai_test_data:

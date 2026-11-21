@@ -1,0 +1,20 @@
+class: FoodListing
+table: food_listing
+fields:
+  donorUserId: int
+  organisationId: int?
+  title: String
+  rawDescription: String
+  category: String
+  quantity: int
+  unit: String
+  availableUntil: DateTime
+  pickupVenue: String
+  latitude: double?
+  longitude: double?
+  handlingNotes: String?
+  missingFieldsFlagged: bool
+  status: String
+  acceptedNgoId: int?
+  rescueSessionId: int?
+  createdAt: DateTime

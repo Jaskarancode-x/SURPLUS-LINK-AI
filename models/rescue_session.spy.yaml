@@ -1,0 +1,15 @@
+class: RescueSession
+table: rescue_session
+fields:
+  joinCode: String
+  foodListingId: int
+  hostDonorId: int
+  acceptedNgoId: int?
+  assignedVolunteerId: int?
+  status: String
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  join_code_idx:
+    fields: joinCode
+    unique: true

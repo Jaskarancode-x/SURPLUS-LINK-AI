@@ -1,0 +1,15 @@
+class: HandoverVerification
+table: handover_verification
+fields:
+  rescueSessionId: int
+  foodListingId: int
+  handoverToken: String
+  isUsed: bool
+  generatedByUserId: int
+  verifiedByUserId: int?
+  expiresAt: DateTime
+  verifiedAt: DateTime?
+indexes:
+  handover_token_idx:
+    fields: handoverToken
+    unique: true
