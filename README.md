@@ -1,130 +1,180 @@
-# SurplusLink AI — AI Extraction Engine
+# SurplusLink AI — Production-Grade Frontend Architecture
 
-Standalone AI Extraction Engine module for the **SurplusLink AI** Flask backend.
-
-Donors enter free-text surplus food descriptions (e.g. `"30 kg rice and dal, pickup before 6 PM"`). This engine automatically extracts structured listing fields, flags missing or uncertain details (such as `pickup_location`), and returns editable structured data with `requires_confirmation: true` for donor verification. Unconfirmed AI output is never auto-saved.
+An advanced, responsive, real-time surplus food rescue web application built with **React 18**, **Vite**, **TypeScript**, **Tailwind CSS**, and **Framer Motion**. Architected to seamlessly connect to the **SurplusLink AI backend** (`https://github.com/Jaskarancode-x/SURPLUS-LINK-AI`), featuring a **3-Tier AI food extraction engine**, **multi-criteria automated matching**, **interactive volunteer logistics**, and **real-time live impact analytics**.
 
 ---
 
-## Resilient AI Fallback Architecture
+## 🌟 Key Architecture & Highlights
 
-```
-[Donor Free-Text Input]
-          │
-          ▼
-┌────────────────────────────────────────┐
-│ Tier 1: Primary — Google Gemini        │  (google-genai SDK: gemini-3.1-flash-lite, JSON mode)
-│         (Alternate: ChatGPT OpenAI)    │  (openai SDK: gpt-4o-mini, 8s timeout)
-└──────────────────┬─────────────────────┘
-                   │ (Fails: Missing Key / Timeout / Rate Limit / Quota / Network)
-                   ▼
-┌────────────────────────────────────────┐
-│ Tier 2: Secondary — Grok / Groq Cloud  │  (OpenAI-compatible client: grok-2-latest or qwen/qwen3.8-27b)
-└──────────────────┬─────────────────────┘
-                   │ (Fails: Missing Key / Timeout / Rate Limit / Network)
-                   ▼
-┌────────────────────────────────────────┐
-│ Tier 3: Tertiary — Local AI Extractor  │  (Pure Python Regex + Lightweight NLP Heuristics)
-└────────────────────────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────────────────────────┐
-│ Output: Structured Listing, Missing Fields Flagged,         │
-│         Original raw_draft Preserved, requires_confirm=True │
-└─────────────────────────────────────────────────────────────┘
-```
+### 1. 3-Tier AI Extraction Integration
+- **Direct Backend Hook**: Connects to Flask `POST /api/ai/extract` (powered by Google Gemini `gemini-3.1-flash-lite`, OpenAI `gpt-4o-mini`, and xAI `grok-2-latest`).
+- **Smart Mock Fallback Engine**: If the backend is offline or `VITE_USE_MOCK_DATA=true`, the client automatically runs an in-browser heuristic NLP regex parser that extracts item titles, categories, quantities, deadlines, and pickup locations.
+- **Safety First**: Implements `requires_confirmation: true` — AI-extracted food listings are never blindly auto-saved; missing fields are highlighted in amber for donor verification before broadcasting.
 
-1. **Tier 1 (Primary) — Google Gemini (`gemini-3.1-flash-lite`)**: Fast, structured JSON extraction using the official `google-genai` SDK. (Supports OpenAI `gpt-4o-mini` as alternate Tier 1).
-2. **Tier 2 (Secondary) — Grok / Groq Cloud**: OpenAI-compatible client (`https://api.x.ai/v1` or `https://api.groq.com/openai/v1`).
-3. **Tier 3 (Tertiary) — Local AI Fallback (Offline)**: Python-native heuristic extractor using regex, unit normalization, category taxonomy, and time parsing so the demo never crashes even completely offline.
+### 2. Multi-Criteria AI Matching Engine
+- Dynamically scores food offers ($0 - 100$) for recipient NGOs using a 4-factor algorithm:
+  - **Proximity Weight (38%)**: Distance-based scaling with transit ETA calculations.
+  - **Capacity Fit Weight (22%)**: Evaluates batch volume against recipient warehouse thresholds.
+  - **Deadline Urgency Weight (25%)**: Prioritizes offers with tighter collection windows.
+  - **Dietary Specialty Weight (15%)**: Bonus scoring for matching category preferences (`Cooked Meals`, `Bakery`, `Fresh Produce`).
+- Includes interactive perspective switching between **Roti Bank Foundation**, **Sewa Community Kitchen**, and **Annapurna Shelter Home**.
+
+### 3. Volunteer Transit & Secure 6-Digit Handover
+- Animated logistics pipeline with interactive scooter animations and real-time status transitions (`open` → `accepted` → `transit` → `collected`).
+- Single-use 6-digit PIN verification system with a live 15-minute countdown timer.
+- Handover Desk verification: NGOs enter the code on arrival; consumed or mismatched codes are instantly rejected, ensuring end-to-end chain-of-custody tracking.
+
+### 4. Live Impact Analytics & Multi-Tab Sync
+- Powered by **Recharts**:
+  - Interactive cumulative rescued food timeline (AreaChart).
+  - Partner intake vs capacity comparisons (BarChart).
+  - Dietary category distribution breakdown (Donut / PieChart).
+- Synchronized across multiple browser tabs and mobile devices using `BroadcastChannel` and `StorageEvent` APIs.
+- Dynamic environmental metrics: $1 \text{ kg food rescued} \approx 2.5 \text{ meals shared} \approx 2.5 \text{ kg } \mathrm{CO}_2 \text{ avoided}$.
 
 ---
 
-## Output Schema (Pydantic Model)
+## 🛠 Tech Stack
 
-| Field | Type | Description |
-|---|---|---|
-| `title` | `str \| None` | Concise name of food items (e.g. `"Rice and dal"`) |
-| `category` | `str \| None` | One of `Cooked Meals`, `Grains/Staples`, `Produce`, `Bakery`, `Dairy`, `Other` |
-| `quantity` | `float \| None` | Numeric quantity (e.g. `30.0`) |
-| `unit` | `str \| None` | Normalized unit (e.g. `kg`, `plates`, `boxes`, `liters`) |
-| `deadline` | `str \| None` | Extracted pickup deadline (e.g. `"6 PM"`) |
-| `pickup_location` | `str \| None` | Pickup venue or address (`None` if omitted) |
-| `missing_fields` | `list[str]` | Flags any required field that is missing or uncertain (e.g. `["pickup_location"]`) |
-| `provider_used` | `Literal` | `"gemini"`, `"openai"`, `"grok"`, or `"local_fallback"` |
-| `requires_confirmation` | `bool` | Always `True` (donor must confirm before saving) |
-| `raw_draft` | `str` | Original donor text input |
-| `warning` | `str \| None` | Fallback notification message if cloud tier failed |
+| Layer | Technologies |
+|---|---|
+| **Framework & Tooling** | React 18, Vite 6, TypeScript (Strict Mode) |
+| **Styling & Tokens** | Tailwind CSS with custom CSS variables for light/dark themes |
+| **Animation & Micro-interactions** | Framer Motion, Canvas Confetti |
+| **Data Visualization & Icons** | Recharts, Lucide React |
+| **State & Data Fetching** | TanStack Query (`@tanstack/react-query`), Axios |
+| **Real-time Sync** | BroadcastChannel API, Storage Events, WebSockets/Serverpod-ready |
 
 ---
 
-## API Endpoints
+## 🚀 Quick Start Guide
 
-### 1. Extract Food Listing
-`POST /api/ai/extract`
+### 1. Prerequisites
+- **Node.js**: v18.0.0 or later (v24+ recommended)
+- **npm**: v9.0.0 or later
 
-**Request:**
-```json
-{
-  "text": "30 kg rice and dal, pickup before 6 PM"
-}
-```
-
-**Response (HTTP 200 OK):**
-```json
-{
-  "title": "Rice and dal",
-  "category": "Cooked Meals",
-  "quantity": 30.0,
-  "unit": "kg",
-  "deadline": "6 PM",
-  "pickup_location": null,
-  "missing_fields": [
-    "pickup_location"
-  ],
-  "provider_used": "gemini",
-  "requires_confirmation": true,
-  "raw_draft": "30 kg rice and dal, pickup before 6 PM",
-  "warning": null
-}
-```
-
-### 2. Health Check
-`GET /health`
-```json
-{
-  "service": "SurplusLink AI Extraction Engine",
-  "status": "healthy"
-}
-```
-
----
-
-## Setup & Running
-
-### 1. Install Dependencies
+### 2. Install Dependencies
 ```bash
-pip install -r requirements.txt
+cd frontend
+npm install
 ```
 
-### 2. Configure Environment
-Copy `.env.example` to `.env` and configure keys:
+### 3. Environment Configuration
+Copy `.env.example` to `.env`:
 ```bash
 copy .env.example .env
 ```
 
-### 3. Verify Key Connectivity
+| Variable | Default | Description |
+|---|---|---|
+| `VITE_API_BASE_URL` | `http://127.0.0.1:5000` | Points to the SurplusLink AI Flask / Serverpod backend |
+| `VITE_USE_MOCK_DATA` | `true` | When `true`, enables offline smart mock fallback simulation |
+| `VITE_MOCK_DELAY_MS` | `500` | Simulated AI inference delay for testing loading states |
+| `VITE_DEFAULT_JOIN_CODE` | `RESCUE-7QK2` | Default session code for live multi-party coordination |
+
+### 4. Run Development Server
 ```bash
-python verify_keys.py
+npm run dev
+```
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000) in your browser.
+
+### 5. Type-Check and Production Build
+```bash
+# Verify TypeScript strict type-checking
+npx tsc --noEmit
+
+# Compile production bundle
+npm run build
 ```
 
-### 4. Run Unit Tests
-```bash
-pytest -v
+---
+
+## 🔌 Connecting to the Live Python Backend
+
+To connect the frontend to the live Python AI extraction server in `../Surplus_link AIversion2`:
+
+1. **Start the Flask Backend Server**:
+   ```bash
+   cd "..\Surplus_link AIversion2"
+   python app.py
+   ```
+   The backend will start on `http://127.0.0.1:5000`.
+
+2. **Configure Frontend `.env`**:
+   Update `frontend/.env`:
+   ```ini
+   VITE_API_BASE_URL=http://127.0.0.1:5000
+   VITE_USE_MOCK_DATA=false
+   ```
+
+3. **Verify Connection**:
+   - The green `API LIVE` indicator in the navbar will illuminate.
+   - When you click **"Extract details with AI"** in the Donate tab, requests route directly to `http://127.0.0.1:5000/api/ai/extract` using Google Gemini or Grok.
+   - If the backend is temporarily stopped, the frontend seamlessly degrades to the Tier-3 offline parser with zero user disruption.
+
+---
+
+## 📂 Project Directory Structure
+
+```
+frontend/
+├── src/
+│   ├── types/               # TypeScript interfaces mirroring backend schemas
+│   │   └── index.ts
+│   ├── services/            # API client, matching engine, sync, mock data
+│   │   ├── api.ts           # Centralized Axios client + mock fallback
+│   │   ├── matchingEngine.ts# Multi-criteria scoring & ranking algorithms
+│   │   ├── syncService.ts   # Cross-tab BroadcastChannel synchronizer
+│   │   └── mockData.ts      # Seeded listings, NGOs, and taxonomy
+│   ├── context/             # Global application state & theme providers
+│   │   ├── RescueContext.tsx# Listings, active NGO, transit, code verification
+│   │   ├── ThemeContext.tsx # Dark/Light theme manager with persistence
+│   │   └── ToastContext.tsx # Toast alerts and confetti triggers
+│   ├── components/
+│   │   ├── common/          # Navbar, MobileDock, GlassCard, Badges, Skeleton
+│   │   ├── donate/          # DonorForm, AIReviewCard, ActiveListings
+│   │   ├── ngo/             # NgoSelector, NgoOfferCard, HandoverDesk
+│   │   ├── volunteer/       # PickupQueue, TransitLane, HandoverCodeBox
+│   │   ├── impact/          # ImpactMetrics, GoalRing, ImpactCharts, LiveFeed
+│   │   └── session/         # LiveSessionModal with QR/Join code
+│   ├── pages/               # Top-level view modules (Home, Donate, NGOs, etc.)
+│   ├── styles/              # Global styles, Tailwind directives, glass tokens
+│   ├── App.tsx              # Main application shell and tab manager
+│   └── main.tsx             # React DOM root and React Query client
+├── FRONTEND_SPEC.md         # Full architectural audit and backend API spec
+├── package.json
+├── tailwind.config.js
+├── vite.config.ts
+└── tsconfig.json
 ```
 
-### 5. Start Flask Server
-```bash
-python app.py
-```
-Server runs on `http://127.0.0.1:5000`.
+---
+
+## 🏆 User Flows Demo Walkthrough
+
+1. **Donor Flow**:
+   - Navigate to `#donate`.
+   - Select the demo prompt: `"30 kg rice and dal, pickup before 6 PM from MG Road"`.
+   - Click **"Extract details with AI"**.
+   - Notice the AI extraction preview flagging `pickup_location` or validating fields.
+   - Click **"Post to Rescue Network"** (confetti burst confirms publication).
+
+2. **NGO Matching Flow**:
+   - Navigate to `#ngos`.
+   - Notice the AI Compatibility Score (e.g., $94/100$) and multi-criteria tags.
+   - Switch between **Roti Bank**, **Sewa Kitchen**, and **Annapurna** to see how capacity and diet preferences dynamically change the ranking.
+   - Click **"Accept Donation"**.
+
+3. **Volunteer Logistics Flow**:
+   - Navigate to `#volunteer`.
+   - Click **"Start Pickup & Generate Handover Code"**.
+   - Watch the animated scooter rider transition to midway transit.
+   - An ephemeral 6-digit code (e.g. `849201`) is generated with a 15-minute countdown.
+
+4. **Handover Desk Verification**:
+   - Switch back to `#ngos` or click **"Simulate Arriving at NGO Handover Desk"**.
+   - Enter the 6-digit code in the Handover Verification Desk PIN box.
+   - Click **"Verify Handover"** to complete chain of custody. Edible food is officially saved and tallied.
+
+5. **Live Impact Analytics**:
+   - Navigate to `#impact` to view updated cumulative rescued kilograms, shared meals counter, $\text{CO}_2$ emissions avoided, and real-time Recharts visualizations.
