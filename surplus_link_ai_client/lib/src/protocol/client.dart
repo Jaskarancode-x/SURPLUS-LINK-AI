@@ -17,6 +17,8 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _iaic;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:surplus_link_ai_client/src/protocol/food_listing.dart'
+    as _i0r66vnj;
 import 'protocol.dart' as _il2as5qe;
 
 /// By extending [EmailOtpIdpBaseEndpoint], the email identity provider
@@ -345,6 +347,76 @@ class EndpointJwtRefresh extends _iacc.EndpointRefreshJwtTokens {
       );
 }
 
+/// Endpoint managing donation listings and status updates.
+/// {@category Endpoint}
+class EndpointDonation extends _isc.EndpointRef {
+  EndpointDonation(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'donation';
+
+  /// Creates a new donation listing with server-side role and data validation.
+  /// Only callers with role 'donor' are authorized to create listings.
+  _ida.Future<_i0r66vnj.FoodListing> createListing(
+    _i0r66vnj.FoodListing listing, {
+    required int callerUserId,
+    required String callerRole,
+  }) => caller.callServerEndpoint<_i0r66vnj.FoodListing>(
+    'donation',
+    'createListing',
+    {
+      'listing': listing,
+      'callerUserId': callerUserId,
+      'callerRole': callerRole,
+    },
+  );
+
+  /// Updates an existing donation listing with ownership and role checks.
+  _ida.Future<_i0r66vnj.FoodListing> updateListing(
+    _i0r66vnj.FoodListing updatedListing, {
+    required int callerUserId,
+    required String callerRole,
+  }) => caller.callServerEndpoint<_i0r66vnj.FoodListing>(
+    'donation',
+    'updateListing',
+    {
+      'updatedListing': updatedListing,
+      'callerUserId': callerUserId,
+      'callerRole': callerRole,
+    },
+  );
+
+  /// Lists all active surplus listings sorted by deadline urgency (closest first).
+  _ida.Future<List<_i0r66vnj.FoodListing>> listAvailableListings({
+    String? category,
+    int? minQuantity,
+  }) => caller.callServerEndpoint<List<_i0r66vnj.FoodListing>>(
+    'donation',
+    'listAvailableListings',
+    {
+      'category': category,
+      'minQuantity': minQuantity,
+    },
+  );
+
+  /// Fetches a single listing by ID.
+  _ida.Future<_i0r66vnj.FoodListing?> getListing(int listingId) =>
+      caller.callServerEndpoint<_i0r66vnj.FoodListing?>(
+        'donation',
+        'getListing',
+        {'listingId': listingId},
+      );
+
+  /// Lists all listings created by a specific donor.
+  _ida.Future<List<_i0r66vnj.FoodListing>> getListingsByDonor(
+    int donorUserId,
+  ) => caller.callServerEndpoint<List<_i0r66vnj.FoodListing>>(
+    'donation',
+    'getListingsByDonor',
+    {'donorUserId': donorUserId},
+  );
+}
+
 class Modules {
   Modules(Client client) {
     serverpod_auth_idp = _iaic.Caller(client);
@@ -385,6 +457,7 @@ class Client extends _isc.ServerpodClientShared {
        ) {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
+    donation = EndpointDonation(this);
     modules = Modules(this);
   }
 
@@ -392,12 +465,15 @@ class Client extends _isc.ServerpodClientShared {
 
   late final EndpointJwtRefresh jwtRefresh;
 
+  late final EndpointDonation donation;
+
   late final Modules modules;
 
   @override
   Map<String, _isc.EndpointRef> get endpointRefLookup => {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
+    'donation': donation,
   };
 
   @override

@@ -19,6 +19,8 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
 import 'package:serverpod_test/serverpod_test.dart' as _ist;
+import 'package:surplus_link_ai_server/src/generated/food_listing.dart'
+    as _ibkqq8om;
 import 'package:surplus_link_ai_server/src/generated/protocol.dart';
 import 'package:surplus_link_ai_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -155,6 +157,8 @@ class TestEndpoints {
   late final _EmailIdpEndpoint emailIdp;
 
   late final _JwtRefreshEndpoint jwtRefresh;
+
+  late final _DonationEndpoint donation;
 }
 
 class _InternalTestEndpoints extends TestEndpoints
@@ -169,6 +173,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     jwtRefresh = _JwtRefreshEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    donation = _DonationEndpoint(
       endpoints,
       serializationManager,
     );
@@ -617,6 +625,188 @@ class _JwtRefreshEndpoint {
                   _localCallContext.arguments,
                 )
                 as _ida.Future<_iacs.AuthSuccess>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _DonationEndpoint {
+  _DonationEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _is.EndpointDispatch _endpointDispatch;
+
+  final _is.SerializationManager _serializationManager;
+
+  _ida.Future<_ibkqq8om.FoodListing> createListing(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ibkqq8om.FoodListing listing, {
+    required int callerUserId,
+    required String callerRole,
+  }) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'donation',
+            method: 'createListing',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'donation',
+          methodName: 'createListing',
+          parameters: _ist.testObjectToJson({
+            'listing': listing,
+            'callerUserId': callerUserId,
+            'callerRole': callerRole,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_ibkqq8om.FoodListing>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_ibkqq8om.FoodListing> updateListing(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ibkqq8om.FoodListing updatedListing, {
+    required int callerUserId,
+    required String callerRole,
+  }) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'donation',
+            method: 'updateListing',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'donation',
+          methodName: 'updateListing',
+          parameters: _ist.testObjectToJson({
+            'updatedListing': updatedListing,
+            'callerUserId': callerUserId,
+            'callerRole': callerRole,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_ibkqq8om.FoodListing>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<List<_ibkqq8om.FoodListing>> listAvailableListings(
+    _ist.TestSessionBuilder sessionBuilder, {
+    String? category,
+    int? minQuantity,
+  }) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'donation',
+            method: 'listAvailableListings',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'donation',
+          methodName: 'listAvailableListings',
+          parameters: _ist.testObjectToJson({
+            'category': category,
+            'minQuantity': minQuantity,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<List<_ibkqq8om.FoodListing>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_ibkqq8om.FoodListing?> getListing(
+    _ist.TestSessionBuilder sessionBuilder,
+    int listingId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'donation',
+            method: 'getListing',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'donation',
+          methodName: 'getListing',
+          parameters: _ist.testObjectToJson({'listingId': listingId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_ibkqq8om.FoodListing?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<List<_ibkqq8om.FoodListing>> getListingsByDonor(
+    _ist.TestSessionBuilder sessionBuilder,
+    int donorUserId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'donation',
+            method: 'getListingsByDonor',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'donation',
+          methodName: 'getListingsByDonor',
+          parameters: _ist.testObjectToJson({'donorUserId': donorUserId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<List<_ibkqq8om.FoodListing>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

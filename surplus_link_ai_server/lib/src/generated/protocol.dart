@@ -17,6 +17,8 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
+import 'package:surplus_link_ai_server/src/generated/food_listing.dart'
+    as _ibkqq8om;
 import 'food_listing.dart' as _i121fseh;
 import 'handover_verification.dart' as _iy0qs1gv;
 import 'organisation.dart' as _in9qizgy;
@@ -63,6 +65,7 @@ class Protocol extends _is.DatabaseSerializationManager
           _is.getType<_iieylioa.RescueStreamEvent?>,
           _is.getType<_iwjh4o59.SessionParticipant?>,
           _is.getType<_iv73i78m.User?>,
+          _is.getType<List<_ibkqq8om.FoodListing>>,
         ],
         modules: const [
           _iais.Protocol.new,
@@ -719,6 +722,12 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (t == _is.getType<_iv73i78m.User?>()) {
       return (data != null ? _iv73i78m.User.fromJson(data) : null) as T;
+    }
+    if (t == List<_ibkqq8om.FoodListing>) {
+      return (data as List)
+              .map((e) => deserialize<_ibkqq8om.FoodListing>(e))
+              .toList()
+          as T;
     }
     final modules = deserializationMetadata.modulesForDeserialization(
       t,

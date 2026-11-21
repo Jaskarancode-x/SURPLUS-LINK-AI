@@ -15,8 +15,11 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
+import 'package:surplus_link_ai_server/src/generated/food_listing.dart'
+    as _ibkqq8om;
 import '../auth/email_idp_endpoint.dart' as _iuc1hd5t;
 import '../auth/jwt_refresh_endpoint.dart' as _inwq3ztq;
+import '../endpoints/donation_endpoint.dart' as _ivpeodxk;
 
 class Endpoints extends _is.EndpointDispatch {
   @override
@@ -41,6 +44,12 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'jwtRefresh',
+          null,
+        ),
+      'donation': _ivpeodxk.DonationEndpoint()
+        ..initialize(
+          server,
+          'donation',
           null,
         ),
     };
@@ -335,6 +344,137 @@ class Endpoints extends _is.EndpointDispatch {
                         session,
                         refreshToken: params['refreshToken'],
                       ),
+        ),
+      },
+    );
+    connectors['donation'] = _is.EndpointConnector(
+      name: 'donation',
+      endpoint: endpoints['donation']!,
+      methodConnectors: {
+        'createListing': _is.MethodConnector(
+          name: 'createListing',
+          params: {
+            'listing': _is.ParameterDescription(
+              name: 'listing',
+              type: _is.getType<_ibkqq8om.FoodListing>(),
+              nullable: false,
+            ),
+            'callerUserId': _is.ParameterDescription(
+              name: 'callerUserId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'callerRole': _is.ParameterDescription(
+              name: 'callerRole',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['donation'] as _ivpeodxk.DonationEndpoint)
+                  .createListing(
+                    session,
+                    params['listing'],
+                    callerUserId: params['callerUserId'],
+                    callerRole: params['callerRole'],
+                  ),
+        ),
+        'updateListing': _is.MethodConnector(
+          name: 'updateListing',
+          params: {
+            'updatedListing': _is.ParameterDescription(
+              name: 'updatedListing',
+              type: _is.getType<_ibkqq8om.FoodListing>(),
+              nullable: false,
+            ),
+            'callerUserId': _is.ParameterDescription(
+              name: 'callerUserId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'callerRole': _is.ParameterDescription(
+              name: 'callerRole',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['donation'] as _ivpeodxk.DonationEndpoint)
+                  .updateListing(
+                    session,
+                    params['updatedListing'],
+                    callerUserId: params['callerUserId'],
+                    callerRole: params['callerRole'],
+                  ),
+        ),
+        'listAvailableListings': _is.MethodConnector(
+          name: 'listAvailableListings',
+          params: {
+            'category': _is.ParameterDescription(
+              name: 'category',
+              type: _is.getType<String?>(),
+              nullable: true,
+            ),
+            'minQuantity': _is.ParameterDescription(
+              name: 'minQuantity',
+              type: _is.getType<int?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['donation'] as _ivpeodxk.DonationEndpoint)
+                  .listAvailableListings(
+                    session,
+                    category: params['category'],
+                    minQuantity: params['minQuantity'],
+                  ),
+        ),
+        'getListing': _is.MethodConnector(
+          name: 'getListing',
+          params: {
+            'listingId': _is.ParameterDescription(
+              name: 'listingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['donation'] as _ivpeodxk.DonationEndpoint)
+                  .getListing(
+                    session,
+                    params['listingId'],
+                  ),
+        ),
+        'getListingsByDonor': _is.MethodConnector(
+          name: 'getListingsByDonor',
+          params: {
+            'donorUserId': _is.ParameterDescription(
+              name: 'donorUserId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['donation'] as _ivpeodxk.DonationEndpoint)
+                  .getListingsByDonor(
+                    session,
+                    params['donorUserId'],
+                  ),
         ),
       },
     );

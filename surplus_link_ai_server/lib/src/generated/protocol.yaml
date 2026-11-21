@@ -13,3 +13,9 @@ emailIdp:
   - hasAccount:
 jwtRefresh:
   - refreshAccessToken:
+donation:
+  - createListing:
+  - updateListing:
+  - listAvailableListings:
+  - getListing:
+  - getListingsByDonor:
