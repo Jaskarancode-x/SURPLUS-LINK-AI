@@ -1,49 +1,29 @@
-# Environment variables and secrets
+# Environment secrets
 .env
 .env.*
 !.env.example
+!.env.*.example
 
-# Python bytecode and caches
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
+# Dependencies
+node_modules/
 venv/
 .venv/
-env/
-ENV/
+__pycache__/
 
-# Testing and coverage
+# Build files
+dist/
+build/
+.next/
+out/
+
+# Python
+*.pyc
 .pytest_cache/
-.coverage
-.coverage.*
-htmlcov/
-.tox/
-.nox/
 
-# IDE and OS files
+# IDE and OS
+.DS_Store
 .vscode/
 .idea/
-*.swp
-*.swo
-.DS_Store
-Thumbs.db
+
+# Logs
+*.log

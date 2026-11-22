@@ -1,6 +1,24 @@
-# Serverpod project
+# SurplusLink AI — project instructions
 
-This project is a Serverpod server (backend).
+## Active stack
+
+The active implementation is the unified Python stack in `backend/` (FastAPI + SQLAlchemy/Alembic). It is the single authority for REST, WebSockets, AI extraction, matching, volunteer pickups, QR handover, and impact reporting. The React client lives in `E:\SurplusLinkAI\frontend` and targets `http://127.0.0.1:8000` locally.
+
+Use `backend/README.md` for setup, demo accounts, endpoint contracts, tests, and Render deployment. Use `backend/render.yaml` as the Render Blueprint. The old Serverpod/Dart and Flask services are legacy and should not be extended; archive or remove them only after the FastAPI replacement is verified.
+
+The backend test command is:
+
+```powershell
+cd E:\SurplusLinkAI\backend
+.\.venv\Scripts\python.exe -m pytest tests/test_api.py -q
+```
+
+Realtime events use an in-process `EventHub`, so deploy **one** backend web instance. Multiple workers would not share WebSocket subscribers.
+
+## Legacy Serverpod package (reference only)
+
+Reference snapshots of the Builders Theory Dart matcher, SurplusLink AI v2 Flask extractor, and the attached volunteer QR Flask files live in `reference/`. They are read-only provenance; do not run or extend them. The full legacy Serverpod package remains outside this folder under `E:\Backend\surplus_link_ai_server`; do not use it for new feature work.
+
 Build for multiple users, use Serverpod's built-in authentication, which is already set up in `lib/server.dart`.
 
 The server runs under the Serverpod runner, a background process per server package. The user attaches to it with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then call `tail_runner_logs` to learn whether it is still starting or why it stopped. If nothing is running, start it with `serverpod runner start` in `surplus_link_ai_server`, which returns once the server is up and leaves it running for the user to attach to. If it fails, fix the cause it reports (a build error, a port held by another process, Docker) instead of retrying; only a `serverpod runner start` your shell killed on a timeout is run again, since the runner keeps starting. Leave the runner running, and run `serverpod runner stop` only when asked.
@@ -28,7 +46,9 @@ Only when the MCP is not available or `serverpod runner start` cannot bring the 
 
 Tests need no Docker. `config/test.yaml` sets `database.dataPath`, so Serverpod starts and manages the test database (an embedded PostgreSQL) itself, and the project's `docker-compose.yaml` is not used for it. Just run `dart test` in the server package.
 
-Checklist after doing changes, in this order:
+### Legacy checklist
+
+Checklist after doing changes to the legacy Serverpod package, in this order:
 
 - `dart analyze` (CLI)
 - `dart format` (CLI)
@@ -36,5 +56,3 @@ Checklist after doing changes, in this order:
 - Do `serverpod` MCP `hot_restart` if required (hot reload is done automatically)
 - Run tests, if applicable (`dart test` in the server package)
 - Check `serverpod` MCP `tail_server_logs` for any issues.
-
-IMPORTANT: After building the first version of the app, update this AGENTS.md file with information about the app we're building. KEEP the info about the MCP server and the checklist. Remove this paragraph.
